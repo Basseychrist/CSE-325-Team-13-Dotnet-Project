@@ -14,7 +14,7 @@
 ## Meeting Report: Project Technology Stack & Requirements Discussion
 
 **Date:** January 15, 2026  
-**Attendees:** Eno-obong Etim Bassey, Pablo Daniel Zabaleta, Maria Arevalo Narvaez, Ebenezar Edem John
+**Attendees:** Eno-obong Etim Bassey, Pablo Daniel Zabaleta, Maria Arevalo Narvaez, Ebenezer Edem John
 
 ### Meeting Overview
 The team convened to establish the technical foundation and core requirements for the CSE-325 Dotnet Project. After evaluating the seven proposed application ideas, the team reached consensus on the technology stack and key architectural components to be implemented across the selected project.
@@ -92,4 +92,5 @@ The team evaluated seven potential project ideas, each with specific features an
 ### 7. Simple Inventory or Task Management App
 **Features:** Item tracking, inventory counts, task assignment, status updates, alerts for low stock, basic reporting
 **Target Audience:** Small businesses, warehouses, and teams needing simple task organization
+
 
