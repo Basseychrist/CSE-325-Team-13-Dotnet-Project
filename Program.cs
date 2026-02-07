@@ -4,6 +4,11 @@ using SmartBudget.Components;
 using SmartBudget.Data;
 using SmartBudget.Models;
 using SmartBudget.Repositories;
+// ADD THESE TWO LINES:
+using SmartBudget.Interfaces;
+using SmartBudget.Services;
+
+using Microsoft.EntityFrameworkCore.Diagnostics;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,8 +16,16 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+// builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//     options.UseSqlServer(connectionString));
+
+// builder.Services.AddDbContext<ApplicationDbContext>(options =>
+//     options.UseSqlite(connectionString));
+
+// Update your DbContext registration:
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlite(connectionString)
+           .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
 
 // Add Identity
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
@@ -25,7 +38,11 @@ builder.Services.AddRazorComponents()
 // Add repository services
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
+// REGISTER YOUR EXPENSE SERVICE HERE:
+builder.Services.AddScoped<IExpenseService, ExpenseService>();
+
 var app = builder.Build();
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
