@@ -9,6 +9,8 @@ using SmartBudget.Interfaces;
 using SmartBudget.Services;
 
 using Microsoft.EntityFrameworkCore.Diagnostics;
+// OS DETECTION (MACOS/WINDOWS):
+using System.Runtime.InteropServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,8 +26,20 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 // Update your DbContext registration:
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlite(connectionString)
-           .ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning)));
+{
+    if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+    {
+        // Use SQLite for Mac
+        options.UseSqlite(connectionString);
+    }
+    else
+    {
+        // Use SQL Server for the team on Windows
+        options.UseSqlServer(connectionString);
+    }
+    
+    options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+});
 
 // Add Identity
 builder.Services.AddIdentityApiEndpoints<ApplicationUser>()
