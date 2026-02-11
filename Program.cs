@@ -7,7 +7,7 @@ using SmartBudget.Repositories;
 // ADD THESE TWO LINES:
 using SmartBudget.Interfaces;
 using SmartBudget.Services;
-//account
+// account
 using Microsoft.AspNetCore.Components.Authorization;
 using SmartBudget.Components.Account;
 
@@ -21,9 +21,27 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
     ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-// Configure SQL Server connection
+// Configure SQL Server connection (Forced for team parity via Docker)
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+{
+    options.UseSqlServer(connectionString);
+    
+    // Ignore PendingModelChangesWarning caused by dynamic values in ApplicationDbContext seed data
+    options.ConfigureWarnings(w => w.Ignore(RelationalEventId.PendingModelChangesWarning));
+});
+
+// Authentication & Identity Services
+builder.Services.AddCascadingAuthenticationState();
+builder.Services.AddScoped<IdentityUserAccessor>();
+builder.Services.AddScoped<IdentityRedirectManager>();
+builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultScheme = IdentityConstants.ApplicationScheme;
+        options.DefaultSignInScheme = IdentityConstants.ExternalScheme;
+    })
+    .AddIdentityCookies();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddEntityFrameworkStores<ApplicationDbContext>()

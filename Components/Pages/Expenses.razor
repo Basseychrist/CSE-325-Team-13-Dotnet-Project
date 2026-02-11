@@ -7,14 +7,14 @@
 @using Microsoft.AspNetCore.Components.Authorization
 @using System.Security.Claims
 
-@* @attribute [Authorize] *@
+@attribute [Authorize]
 @inject IExpenseService ExpenseService
 @* Rename the injected provider to avoid a conflict with the Class Name *@
 @inject AuthenticationStateProvider AuthStateProvider
 
 <PageTitle>Expenses - Smart Budget</PageTitle>
 
-<p class="mb-0 opacity-75">Logged in as: <strong>@userId</strong> (Dev Mode)</p>
+<p class="mb-0 opacity-75">Logged in as: <strong>@userEmail</strong></p>
 
 <section class="expense-header text-white py-4 mb-4 shadow-sm">
     <div class="container">
@@ -37,7 +37,7 @@
 
                     @* Add FormName="AddExpenseForm" here *@
                     <EditForm Model="newExpense" OnValidSubmit="HandleAddExpense" FormName="AddExpenseForm">
-                        <DataAnnotationsValidator />                   
+                        <DataAnnotationsValidator />
 
                         <div class="mb-3">
                             <label class="form-label small fw-bold text-muted">Description</label>
@@ -123,7 +123,7 @@
                                             </td>
                                             <td>
                                                 @* Fix: Using CategoryName from DTO instead of Category.Name *@
-                                                <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 rounded-pill">
+                                                <span                                    class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 rounded-pill">
                                                     @expense.CategoryName
                                                 </span>
                                             </td>
@@ -188,31 +188,32 @@
     }
 </style>
 
-    @code {
-        private List<ExpenseDto> userExpenses = new();
-        private List<Category> categories = new();
-        private CreateExpenseDto newExpense = new() { Date = DateTime.Now };
-        private decimal monthlyTotal;
-        private string? userId;
+@code {
+    private List<ExpenseDto> userExpenses = new();
+    private List<Category> categories = new();
+    private CreateExpenseDto newExpense = new() { Date = DateTime.Now };
+    private decimal monthlyTotal;
+    
+    // Identity variables
+    private string? userId;
+    private string? userEmail;
 
-        protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync()
+    {
+        // Get the real authentication state
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        // Extract real user data from Claims
+        userId = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        userEmail = user.Identity?.Name;
+
+        // Load data only if user is logged in
+        if (!string.IsNullOrEmpty(userId))
         {
-            // 1. HARDCODE THE ID HERE
-            // Use any string you like. This ID will own the expenses in your DB.
-            userId = "dev-user-123";
-
-            // 2. BYPASS THE AUTH CHECK
-            /* var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-            userId = authState.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            */
-
-            // 3. PROCEED TO LOAD DATA
-            if (!string.IsNullOrEmpty(userId))
-            {
-                await LoadData();
-            }
+            await LoadData();
         }
-
+    }
 
     private async Task LoadData()
     {
@@ -226,29 +227,17 @@
         );
     }
 
-
-
     private async Task HandleAddExpense()
     {
-        Console.WriteLine("--- HandleAddExpense Triggered ---");
-
-        if (newExpense.CategoryId == 0)
-        {
-            Console.WriteLine("Abort: Category is 0");
-            return;
-        }
+        if (newExpense.CategoryId == 0) return;
 
         try
         {
+            // Use the REAL userId from Identity
             var result = await ExpenseService.CreateExpenseAsync(userId!, newExpense);
-            @* var result = await ExpenseService.CreateExpenseAsync(null, newExpense); *@
-
-            Console.WriteLine($"Saved Expense ID: {result.Id}");
 
             newExpense = new CreateExpenseDto { Date = DateTime.Now };
             await LoadData();
-            Console.WriteLine($"Data Reloaded. Total Count: {userExpenses.Count}");
-
             StateHasChanged();
         }
         catch (Exception ex)
@@ -256,8 +245,6 @@
             Console.WriteLine($"DATABASE ERROR: {ex.Message}");
         }
     }
-
-
 
     private async Task DeleteExpense(int id)
     {

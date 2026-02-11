@@ -1,7 +1,9 @@
 @page "/categories"
 @using SmartBudget.DTOs
 @using SmartBudget.Services
-
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@attribute [Authorize]
 @inject ICategoryService CategoryService
 
 <PageTitle>Categories</PageTitle>
