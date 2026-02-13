@@ -98,8 +98,8 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             new Category { Id = 2, Name = "Transport", UserId = devId, Color = "#33FF57", CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
             new Category { Id = 3, Name = "Rent & Utilities", UserId = devId, Color = "#3357FF", CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
             new Category { Id = 4, Name = "Entertainment", UserId = devId, Color = "#F333FF", CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
-            new Category { Id = 5, Name = "Shopping", UserId = devId, Color = "#FF3380", CreatedAt = DateTime.UtcNow },
-            new Category { Id = 6, Name = "Health", UserId = devId, Color = "#33FFF5", CreatedAt = DateTime.UtcNow }
+            new Category { Id = 5, Name = "Shopping", UserId = devId, Color = "#FF3380", CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
+            new Category { Id = 6, Name = "Health", UserId = devId, Color = "#33FFF5", CreatedAt = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
         );
     }
 }
