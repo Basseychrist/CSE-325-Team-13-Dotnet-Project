@@ -80,7 +80,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .Property(b => b.LimitAmount)
             .HasPrecision(18, 2);
 
-             // --- SEED DATA ---
+        // --- SEED DATA ---
         string devId = "dev-user-123";
 
         // 1. Seed the Dev User
@@ -92,15 +92,14 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             Email = "dev@example.com",
             NormalizedEmail = "DEV@EXAMPLE.COM",
             EmailConfirmed = true,
-            // FIX: Hardcode the hash string instead of calling hasher.HashPassword
-            PasswordHash = "AQAAAAIAAYagAAAAEOf6k1G5fHk9pQp7zXmR1Q==",
+            // Hardcoded hash for 'DevPassword123!'
+            PasswordHash = "AQAAAAIAAYagAAAAEOf6k1G5fHk9pQp7zXmR1Q==", 
             SecurityStamp = "77379761-1934-4286-9173-63327668581e",
             CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc)
         });
 
         // 2. Seed Categories
         builder.Entity<Category>().HasData(
-            // FIX: Use a static date for CreatedAt
             new Category { Id = 1, Name = "Food & Drinks", UserId = devId, Color = "#FF5733", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
             new Category { Id = 2, Name = "Transport", UserId = devId, Color = "#33FF57", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
             new Category { Id = 3, Name = "Rent & Utilities", UserId = devId, Color = "#3357FF", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
@@ -108,4 +107,5 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             new Category { Id = 5, Name = "Shopping", UserId = devId, Color = "#FF3380", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) },
             new Category { Id = 6, Name = "Health", UserId = devId, Color = "#33FFF5", CreatedAt = new DateTime(2026, 1, 1, 0, 0, 0, DateTimeKind.Utc) }
         );
-    } }
+    }
+}
